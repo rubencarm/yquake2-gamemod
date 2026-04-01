@@ -747,6 +747,8 @@ void
 rocket_touch(edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	vec3_t origin;
+	vec3_t playerPos;
+	vec3_t dir;
 	int n;
 
 	if (!ent || !other) /* plane and surf can be NULL */
@@ -822,6 +824,17 @@ rocket_touch(edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
 
 	gi.WritePosition(origin);
 	gi.multicast(ent->s.origin, MULTICAST_PHS);
+
+	if(ent->owner->client){
+		
+		VectorCopy(ent->owner->s.origin, playerPos);
+		VectorSubtract(playerPos, ent->s.origin, dir);
+		VectorNormalize(dir);
+
+
+		fire_rocket(ent, ent->s.origin, dir, 100, 650, 120, 120);	
+
+	}
 
 	G_FreeEdict(ent);
 }
