@@ -25,6 +25,11 @@
  */
 
 #include "header/local.h"
+#include <math.h>
+
+int rockets = 10;
+
+void random_fire(edict_t* self, vec3_t start, vec3_t dir);
 
 /*
  * This is a support routine used when a client is firing
@@ -748,7 +753,7 @@ rocket_touch(edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	vec3_t origin;
 
-	vec3_t rocket_angle;
+	vec3_t rocket_dir;
 	vec3_t normal;
 
 	vec3_t dir;
@@ -828,22 +833,28 @@ rocket_touch(edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
 	gi.WritePosition(origin);
 	gi.multicast(ent->s.origin, MULTICAST_PHS);
 
-	if (ent->owner->client)
+	if (ent->owner)
 	{
 		/* die */
-		VectorCopy(ent->s.angles, rocket_angle);
+		AngleVectors(ent->s.angles,rocket_dir,NULL,NULL);
+
+		printf("rocket_dir: %g %g %g \n", rocket_dir[0], rocket_dir[1], rocket_dir[2]);
+
 		VectorCopy(plane->normal, normal);
 
-		float dot = DotProduct(rocket_angle,normal);
+		float dot = DotProduct(rocket_dir,normal);
 		float dot2 = dot * 2;
 		vec3_t i;
 		VectorScale(normal, dot2, i);
-		VectorSubtract(rocket_angle, i, dir);
+		VectorSubtract(rocket_dir, i, dir);
 
 		VectorNormalize(dir);
 
+		/* now we do a funny */
 
-		fire_rocket(ent, ent->s.origin,dir ,0,100,0.0,0);
+
+		random_fire(ent,ent->s.origin,dir);
+		fire_rocket(ent, ent->s.origin, dir, 100, 650, 120, 120);
 
 
 
@@ -1260,4 +1271,23 @@ fire_bfg(edict_t *self, vec3_t start, vec3_t dir, int damage,
 	}
 
 	gi.linkentity(bfg);
+}
+
+void random_fire(edict_t* self, vec3_t start, vec3_t dir){
+	int n = abs( (int) ((crandom() + 0.5) * 100)) % 2;
+	switch(n){
+		case 0:
+			printf("rocket!\n");
+			fire_grenade(self,start,dir, 100,320,10,100);
+			break;
+		case 1:
+			printf("bfg!\n");
+			fire_bfg(self,start,dir,100,320,100);
+			break;
+	}
+
+
+
+
+
 }
