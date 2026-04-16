@@ -826,7 +826,8 @@ GAME_OBJS_ = \
 	src/game/player/trail.o \
 	src/game/player/view.o \
 	src/game/player/weapon.o \
-	src/game/savegame/savegame.o
+	src/game/savegame/savegame.o \
+	src/game/s_cam.o
 
 # ----------
 
@@ -894,7 +895,8 @@ CLIENT_OBJS_ := \
 	src/server/sv_save.o \
 	src/server/sv_send.o \
 	src/server/sv_user.o \
-	src/server/sv_world.o
+	src/server/sv_world.o \
+	src/game/s_cam.o
 
 ifeq ($(YQ2_OSTYPE), Windows)
 CLIENT_OBJS_ += \

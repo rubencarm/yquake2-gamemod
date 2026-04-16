@@ -1986,6 +1986,9 @@ ClientCommand(edict_t *ent)
 	{
 		Cmd_PrefWeap_f(ent);
 	}
+	else if(Q_stricmp(cmd, "chasecam") == 0){
+		Cmd_Chasecam_Toggle(ent);
+	}
 	else /* anything that doesn't match a command will be a chat */
 	{
 		Cmd_Say_f(ent, false, true);
