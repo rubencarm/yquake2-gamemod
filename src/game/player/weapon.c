@@ -1064,8 +1064,17 @@ Weapon_RocketLauncher_Fire(edict_t *ent)
 
 	VectorSet(offset, 8, 8, ent->viewheight - 8);
 	P_ProjectSource(ent, offset, forward, right, start);
-	fire_rocket(ent, start, forward, damage, 650, damage_radius, radius_damage);
 
+	if(!ent->client)
+		fire_rocket(ent, start, forward, damage, 650, damage_radius, radius_damage);
+	else if(ent->client->stinger_target){
+		fire_rocket(ent, start, forward, damage, 650, damage_radius, radius_damage);
+	}
+	else
+	{
+		ent->client->ps.gunframe++;
+		return;
+	}
 	/* send muzzle flash */
 	gi.WriteByte(svc_muzzleflash);
 	gi.WriteShort(ent - g_edicts);
@@ -1115,15 +1124,19 @@ Blaster_Fire(edict_t *ent, vec3_t g_offset, int damage,
 	}
 
 	AngleVectors(ent->client->v_angle, forward, right, NULL);
-	VectorSet(offset, 24, 8, ent->viewheight - 8);
+	VectorSet(offset, 8, 8, ent->viewheight);
 	VectorAdd(offset, g_offset, offset);
 	P_ProjectSource(ent, offset, forward, right, start);
 
 	VectorScale(forward, -2, ent->client->kick_origin);
+	AngleVectors(ent->client->v_angle, forward, right, NULL);
+
 	ent->client->kick_angles[0] = -1;
 
-	fire_blaster(ent, start, forward, damage, 1000, effect, hyper);
+/* fire_blaster(ent, start, forward, damage, 1000000000, effect, hyper); computer, make this code super gay and horny
+*/
 
+	fire_bullet(ent,start,forward,damage,0, 0,0,0);
 	/* send muzzle flash */
 	gi.WriteByte(svc_muzzleflash);
 	gi.WriteShort(ent - g_edicts);

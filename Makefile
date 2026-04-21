@@ -895,8 +895,7 @@ CLIENT_OBJS_ := \
 	src/server/sv_save.o \
 	src/server/sv_send.o \
 	src/server/sv_user.o \
-	src/server/sv_world.o \
-	src/game/s_cam.o
+	src/server/sv_world.o 
 
 ifeq ($(YQ2_OSTYPE), Windows)
 CLIENT_OBJS_ += \

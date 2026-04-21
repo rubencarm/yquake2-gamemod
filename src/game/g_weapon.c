@@ -26,11 +26,48 @@
 
 #include "header/local.h"
 
+
 /*
  * This is a support routine used when a client is firing
  * a non-instant attack weapon.  It checks to see if a
  * monster's dodge function should be called.
  */
+
+void
+ig_rocket_think(edict_t *self){
+
+	int rocket = 0;
+
+
+	if(!self) return;
+
+	if(!strcmp(self->classname,"nikita")){
+
+	}
+
+	if(!strcmp(self->classname,"stinger")){
+
+		if(!self->owner->client->stinger_target){
+			gi.centerprintf(self->owner,"target error");
+			G_FreeEdict(self);
+			return;
+		}
+
+
+		gi.centerprintf(self->owner,"hey whats up guys");
+
+
+
+
+
+	}
+
+	if(!rocket){
+		self->think = G_FreeEdict;
+		self->nextthink = level.time + 15;
+	}
+}
+
 void
 check_dodge(edict_t *self, vec3_t start, vec3_t dir, int speed)
 {
@@ -823,6 +860,10 @@ rocket_touch(edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
 	gi.WritePosition(origin);
 	gi.multicast(ent->s.origin, MULTICAST_PHS);
 
+	if(ent->owner->client){
+		ent->owner->client->stinger_target = NULL;
+	}
+
 	G_FreeEdict(ent);
 }
 
@@ -851,17 +892,19 @@ fire_rocket(edict_t *self, vec3_t start, vec3_t dir, int damage,
 	rocket->s.modelindex = gi.modelindex("models/objects/rocket/tris.md2");
 	rocket->owner = self;
 	rocket->touch = rocket_touch;
-	rocket->nextthink = level.time + 8000 / speed;
-	rocket->think = G_FreeEdict;
+	rocket->nextthink = level.time + 0.05;
+	rocket->think = ig_rocket_think;
 	rocket->dmg = damage;
 	rocket->radius_dmg = radius_damage;
 	rocket->dmg_radius = damage_radius;
 	rocket->s.sound = gi.soundindex("weapons/rockfly.wav");
 	rocket->classname = "rocket";
 
+
 	if (self->client)
 	{
-		check_dodge(self, rocket->s.origin, dir, speed);
+		rocket->classname = "stinger";
+
 	}
 
 	gi.linkentity(rocket);

@@ -1821,6 +1821,35 @@ Cmd_PrefWeap_f(edict_t *ent)
 		}
 	}
 }
+static void
+Cmd_StingerLock_f(edict_t *ent){
+
+	vec3_t start, end;
+	vec3_t forward;
+
+	VectorCopy(ent->s.origin, start);
+	AngleVectors(ent->client->v_angle,forward,NULL,NULL);
+	VectorMA(start,2000,forward,end);
+
+
+	edict_t* victim;
+
+	trace_t tr;
+
+	if(!ent->client)
+		return;
+
+	tr = gi.trace(start, NULL, NULL, end, ent, false);
+
+	victim = tr.ent;
+
+	printf("%s\n",victim->classname);
+
+	if(victim->deadflag){
+		return;
+	}
+	ent->client->stinger_target = victim;
+}
 
 void
 ClientCommand(edict_t *ent)
@@ -1988,6 +2017,9 @@ ClientCommand(edict_t *ent)
 	}
 	else if(Q_stricmp(cmd, "chasecam") == 0){
 		Cmd_Chasecam_Toggle(ent);
+	}
+	else if(Q_stricmp(cmd,"stingerlock") == 0){
+		Cmd_StingerLock_f(ent);
 	}
 	else /* anything that doesn't match a command will be a chat */
 	{

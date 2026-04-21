@@ -971,6 +971,8 @@ struct gclient_s
 	int chasetoggle;
 	edict_t *chasecam;
 	edict_t *oldplayer;
+
+	edict_t *stinger_target;
 };
 
 struct edict_s
