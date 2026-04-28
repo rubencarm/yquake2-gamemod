@@ -484,6 +484,39 @@ Pickup_Pack(edict_t *ent, edict_t *other)
 
 /* ====================================================================== */
 
+qboolean
+Pickup_StealthCamo(edict_t *ent, edict_t *other){
+	gitem_t* item;
+	int index;
+
+	if(!ent || !other){
+		return false;
+	}
+
+	item = FindItem("Stealth Camo");
+	if(item){
+
+		index = ITEM_INDEX(item);
+		other->client->pers.inventory[index] = 1;
+	}
+	return true;
+}
+
+void
+Use_StealthCamo(edict_t *ent, gitem_t *item){
+	if(!ent || !item)
+	{
+		return;
+	}
+	ValidateSelectedItem(ent);
+
+	if(!ent->client) return;
+
+	ent->client->stealthcamo ^= 1;
+
+	return;
+}
+
 void
 Use_Quad(edict_t *ent, gitem_t *item)
 {
@@ -2579,6 +2612,28 @@ static const gitem_t gameitemlist[] = {
 		NULL,
 		0,
 		"items/s_health.wav items/n_health.wav items/l_health.wav items/m_health.wav"
+	},
+
+	{
+	    NULL,
+		Pickup_StealthCamo,
+		Use_StealthCamo,
+		NULL,
+		NULL,
+		"items/pkup.wav",
+		NULL, 0,
+		NULL,
+		"i_health",
+		"Stealth Camo",
+		3,
+		1,
+		NULL,
+		0,
+		0,
+		NULL,
+		0,
+		""
+
 	},
 
 	/* end of list marker */

@@ -1824,30 +1824,39 @@ Cmd_PrefWeap_f(edict_t *ent)
 static void
 Cmd_StingerLock_f(edict_t *ent){
 
-	vec3_t start, end;
 	vec3_t forward;
 
-	VectorCopy(ent->s.origin, start);
 	AngleVectors(ent->client->v_angle,forward,NULL,NULL);
-	VectorMA(start,2000,forward,end);
-
 
 	edict_t* victim;
 
-	trace_t tr;
 
 	if(!ent->client)
 		return;
 
-	tr = gi.trace(start, NULL, NULL, end, ent, false);
+
+
+	vec3_t start, end;
+	VectorSet(start, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] + ent->viewheight);
+	VectorMA(start, 1024, forward, end);
+
+	trace_t	tr = gi.trace(start, NULL, NULL, end, ent, MASK_SHOT);
+	if(tr.fraction == 1.0){
+		gi.centerprintf(ent,"no lock");
+		return;
+	}
 
 	victim = tr.ent;
 
-	printf("%s\n",victim->classname);
+
+	if(!Q_stricmp(victim->classname,"worldspawn")){
+		return;
+	}
 
 	if(victim->deadflag){
 		return;
 	}
+	printf("%s\n",victim->classname);
 	ent->client->stinger_target = victim;
 }
 

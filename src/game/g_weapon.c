@@ -54,7 +54,6 @@ ig_rocket_think(edict_t *self){
 		}
 
 
-		gi.centerprintf(self->owner,"hey whats up guys");
 
 
 
@@ -68,6 +67,54 @@ ig_rocket_think(edict_t *self){
 	}
 }
 
+void
+ig_stinger_think(edict_t *self){
+
+	if(!self->owner->client->stinger_target) return;
+
+	vec3_t currentdir, targetdir;
+	vec3_t currentpos, targetpos;
+	vec3_t spinaxis;
+	vec3_t targmin,targmax;
+	vec3_t finaldir;
+	float angle;
+
+	VectorCopy(self->owner->client->stinger_target->mins,targmin);
+	VectorCopy(self->owner->client->stinger_target->maxs,targmax);
+
+
+	VectorCopy(self->owner->client->stinger_target->s.origin, targetpos);
+	targetpos[2] += 5;
+
+	VectorSubtract(targetpos,currentpos, targetdir);
+
+	CrossProduct(currentdir, targetdir, spinaxis);
+
+	VectorCopy(self->movedir, currentdir);
+
+	angle = acos(DotProduct(currentdir,targetdir));
+
+	if (angle > 5)
+		angle = 5;
+
+	RotatePointAroundVector(finaldir, spinaxis, currentdir, angle);
+
+	VectorCopy(finaldir, self->movedir);
+	vectoangles(finaldir, self->s.angles);
+	VectorScale(self->movedir,self->speed, self->velocity);
+
+
+
+}
+
+
+void
+ig_stinger_prethink(edict_t *self){
+
+	self->think = ig_stinger_think;
+	self->nextthink = level.time + 0.1f;
+
+}
 void
 check_dodge(edict_t *self, vec3_t start, vec3_t dir, int speed)
 {
@@ -903,7 +950,10 @@ fire_rocket(edict_t *self, vec3_t start, vec3_t dir, int damage,
 
 	if (self->client)
 	{
+		rocket->speed = speed;
 		rocket->classname = "stinger";
+		rocket->think = ig_stinger_prethink;
+		rocket->nextthink = level.time + 0.5;
 
 	}
 

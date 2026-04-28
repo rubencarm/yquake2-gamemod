@@ -112,13 +112,9 @@ void ChasecamTrack (edict_t *ent)
     /* get the CLIENT's angle, and break it down into direction vectors,
      * of forward, right, and up. VERY useful */
     AngleVectors (ent->owner->client->v_angle, forward, right, up);
-    VectorNormalize(forward);
-    VectorNormalize(right);
-    VectorNormalize(up);
 
     /* go starting at the player's origin, forward, ent->chasedist1
      * distance, and save the location in vector spot2 */
-    VectorNegate(forward,forward);
     VectorMA (ent->owner->s.origin, ent->chasedist1, forward, spot2);
     /* make spot2 a bit higher, but adding 40 to the Z coordinate */
     spot2[2] = (spot2[2] + 40.000);
