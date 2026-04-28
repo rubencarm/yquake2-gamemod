@@ -69,52 +69,56 @@ ig_rocket_think(edict_t *self){
 
 void
 ig_stinger_think(edict_t *self){
-
+	if(!self) return;
 	if(!self->owner->client->stinger_target) return;
 
-	vec3_t currentdir, targetdir;
 	vec3_t currentpos, targetpos;
-	vec3_t spinaxis;
-	vec3_t targmin,targmax;
-	vec3_t finaldir;
-	float angle;
+	vec3_t currentdir, targetdir;
 
-	VectorCopy(self->owner->client->stinger_target->mins,targmin);
-	VectorCopy(self->owner->client->stinger_target->maxs,targmax);
-
-
-	VectorCopy(self->owner->client->stinger_target->s.origin, targetpos);
-	targetpos[2] += 5;
-
-	VectorSubtract(targetpos,currentpos, targetdir);
-
-	CrossProduct(currentdir, targetdir, spinaxis);
-
+	vec3_t change;
+	VectorCopy(self->s.origin, currentpos);
 	VectorCopy(self->movedir, currentdir);
+	VectorCopy(self->owner->client->stinger_target->s.origin, targetpos);
+	VectorSubtract(targetpos,currentpos,targetdir);
+	VectorNormalize(targetdir);
+	VectorSubtract(targetdir,currentdir,change);
+	VectorScale(change,0.5,change);
+	VectorAdd(self->movedir,change,self->movedir);
+	VectorNormalize(self->movedir);
+	VectorScale(self->movedir,self->speed,self->velocity);
+	vectoangles(self->movedir,self->s.angles);
+	self->nextthink = level.time + 0.1f;
+	return;
 
-	angle = acos(DotProduct(currentdir,targetdir));
-
-	if (angle > 5)
-		angle = 5;
-
-	RotatePointAroundVector(finaldir, spinaxis, currentdir, angle);
-
-	VectorCopy(finaldir, self->movedir);
-	vectoangles(finaldir, self->s.angles);
-	VectorScale(self->movedir,self->speed, self->velocity);
-
-
-
+	// nice
 }
+
 
 
 void
 ig_stinger_prethink(edict_t *self){
-
+	if(!self) return;
 	self->think = ig_stinger_think;
-	self->nextthink = level.time + 0.1f;
+	self->nextthink = level.time + 0.01f;
 
 }
+
+void
+ig_nikita_think(edict_t* self){
+	if(!self) return;
+
+
+
+	self->nextthink = level.time + 0.01f;
+}
+
+void
+ig_nikita_prethink(edict_t* self){
+	if(!self) return;
+	self->think = ig_nikita_think;
+	self->nextthink = level.time +0.01f;
+}
+
 void
 check_dodge(edict_t *self, vec3_t start, vec3_t dir, int speed)
 {
@@ -939,7 +943,7 @@ fire_rocket(edict_t *self, vec3_t start, vec3_t dir, int damage,
 	rocket->s.modelindex = gi.modelindex("models/objects/rocket/tris.md2");
 	rocket->owner = self;
 	rocket->touch = rocket_touch;
-	rocket->nextthink = level.time + 0.05;
+	rocket->nextthink = level.time + 0.001;
 	rocket->think = ig_rocket_think;
 	rocket->dmg = damage;
 	rocket->radius_dmg = radius_damage;
@@ -950,7 +954,7 @@ fire_rocket(edict_t *self, vec3_t start, vec3_t dir, int damage,
 
 	if (self->client)
 	{
-		rocket->speed = speed;
+		rocket->speed = 100;
 		rocket->classname = "stinger";
 		rocket->think = ig_stinger_prethink;
 		rocket->nextthink = level.time + 0.5;
