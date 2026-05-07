@@ -524,6 +524,9 @@ T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker,
 		vec3_t dir, vec3_t point, vec3_t normal, int damage,
 		int knockback, int dflags, int mod)
 {
+
+	gi.centerprintf(inflictor,"dflags: %d, hello!\n",dflags);
+
 	gclient_t *client;
 	int take;
 	int save;
@@ -634,6 +637,10 @@ T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker,
 		save = damage;
 	}
 
+	if(dflags & DAMAGE_TRANQ){
+		take = 0; // tranquilizers do no damage
+	}
+
 	psave = CheckPowerArmor(targ, point, normal, take, dflags);
 	take -= psave;
 
@@ -671,7 +678,24 @@ T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker,
 
 	if (targ->svflags & SVF_MONSTER)
 	{
-		M_ReactToDamage(targ, attacker);
+		if(dflags & DAMAGE_TRANQ){
+			// do something blah blah but for now lets just print
+			gi.dprintf("enemy %s hit by tranquilzer ", targ->classname);
+			if(dflags & DAMAGE_HEADSHOT){
+				gi.dprintf("in the head");
+			}
+			gi.dprintf("\n");
+
+			if(targ->think)
+				gi.dprintf("they do!\n");
+			else
+				gi.dprintf("they dont.\n");
+
+			if(targ->monsterinfo.sleep)
+				targ->monsterinfo.sleep(targ);
+		}
+		else
+			M_ReactToDamage(targ, attacker);
 
 		if (!(targ->monsterinfo.aiflags & AI_DUCKED) && (take))
 		{

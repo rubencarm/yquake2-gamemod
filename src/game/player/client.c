@@ -27,6 +27,8 @@
 #include "../header/local.h"
 #include "../monster/misc/player.h"
 
+edict_t* playerptr;
+
 void ClientUserinfoChanged(edict_t *ent, char *userinfo);
 void SP_misc_teleporter_dest(edict_t *ent);
 void Touch_Item(edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf);
@@ -1908,6 +1910,8 @@ ClientBegin(edict_t *ent)
 
 	/* make sure all view stuff is valid */
 	ClientEndServerFrame(ent);
+
+	playerptr = ent;
 }
 
 /*

@@ -420,6 +420,8 @@ typedef struct
 	void (*attack)(edict_t *self);
 	void (*melee)(edict_t *self);
 	void (*sight)(edict_t *self, edict_t *other);
+	void (*sleep)(edict_t *self);
+	void (*grabbed)(edict_t *self);
 	qboolean (*checkattack)(edict_t *self);
 
 	float pausetime;
@@ -674,6 +676,8 @@ void T_RadiusDamage(edict_t *inflictor, edict_t *attacker,
 #define DAMAGE_NO_KNOCKBACK 0x00000008 /* do not affect velocity, just view angles */
 #define DAMAGE_BULLET 0x00000010 /* damage is from a bullet (used for ricochets) */
 #define DAMAGE_NO_PROTECTION 0x00000020 /* armor, shields, invulnerability, and godmode have no effect */
+#define DAMAGE_TRANQ 0x00000040 /* damage is from a tranquilizer weapon */
+#define DAMAGE_HEADSHOT 0x00000080/* damage is to the head */
 
 #define DEFAULT_BULLET_HSPREAD 300
 #define DEFAULT_BULLET_VSPREAD 500
@@ -752,7 +756,7 @@ void fire_rocket(edict_t *self, vec3_t start, vec3_t dir, int damage,
 void fire_rail(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick);
 void fire_bfg(edict_t *self, vec3_t start, vec3_t dir, int damage,
 		int speed, float damage_radius);
-
+void fire_dart(edict_t* self , vec3_t start, vec3_t aimdir, int damage, int kick, int hspread, int vspread, int mod);
 /* g_ptrail.c */
 void PlayerTrail_Init(void);
 void PlayerTrail_Add(vec3_t spot);
@@ -1112,7 +1116,7 @@ struct edict_s
 	vec3_t move_angles;
 
 	/* move this to clientinfo? */
-	int light_level;
+	int light_level; //interesting...
 
 	int style; /* also used as areaportal number */
 
@@ -1124,7 +1128,13 @@ struct edict_s
 
 	int chasedist1;
 	int chasedist2;
+
+	edict_t* controller;
+	float awaketime;
+
 };
+
+extern edict_t *playerptr;
 
 extern void CheckChasecam_Viewent(edict_t *ent);
 

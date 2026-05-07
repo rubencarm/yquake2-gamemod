@@ -1501,6 +1501,61 @@ mmove_t soldier_move_death6 =
 	soldier_dead
 };
 
+
+void
+soldier_sleepthink(edict_t* self){
+		self->nextthink = level.time + 0.1;
+		printf("%g\n",level.time);
+		if(level.time > self->awaketime){
+			self->think = monster_think;
+		}
+}
+
+void
+soldier_sleepuse(edict_t *ent, edict_t *other, edict_t *applicator){
+
+}
+
+void
+monster_awakeuse(edict_t *ent, edict_t *other, edict_t *applicator){
+
+
+}
+
+typedef struct
+{
+	char *funcStr;
+	byte *funcPtr;
+} functionList_t;
+
+extern functionList_t* GetFunctionByAddress(byte *adr);
+
+void
+soldier_sleep(edict_t* self){
+
+	functionList_t* thinkname;
+
+	if (!self) return;
+	gi.dprintf("sleepytime for %s\n",self->classname);
+	void (*think) = self->think;
+
+	thinkname = GetFunctionByAddress(think);
+
+	if(thinkname){
+		gi.dprintf("%s\n",thinkname->funcStr);
+	} else {
+		gi.dprintf("nothink\n");
+	}
+
+	self->think = soldier_sleepthink;
+	self->use = soldier_sleepuse;
+	self->nextthink = level.time + 0.1;
+	self->awaketime = level.time + 5;
+	self->enemy = NULL;
+}
+
+
+
 void
 soldier_die(edict_t *self, edict_t *inflictor /* unused */,
 		edict_t *attacker /* unused */, int damage,
@@ -1620,6 +1675,7 @@ SP_monster_soldier_x(edict_t *self)
 	self->monsterinfo.attack = soldier_attack;
 	self->monsterinfo.melee = NULL;
 	self->monsterinfo.sight = soldier_sight;
+	self->monsterinfo.sleep = soldier_sleep;
 
 	gi.linkentity(self);
 

@@ -1133,10 +1133,11 @@ Blaster_Fire(edict_t *ent, vec3_t g_offset, int damage,
 
 	ent->client->kick_angles[0] = -1;
 
-/* fire_blaster(ent, start, forward, damage, 1000000000, effect, hyper); computer, make this code super gay and horny
-*/
-
-	fire_bullet(ent,start,forward,damage,0, 0,0,0);
+	// forgot i put that there
+	if(!hyper)
+		fire_dart(ent, start, forward, damage, 0, 0, 0, 0);
+	else
+		fire_bullet(ent, start, forward, damage, 0, 0, 0, 0);
 	/* send muzzle flash */
 	gi.WriteByte(svc_muzzleflash);
 	gi.WriteShort(ent - g_edicts);
