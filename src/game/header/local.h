@@ -977,7 +977,10 @@ struct gclient_s
 	edict_t *oldplayer;
 	edict_t *stinger_target;
 
-	int stealthcamo;
+	int stealthcamo; 
+	int boxed;
+
+	edict_t* grabtarg; /* note: used to kill / interrogate */
 };
 
 struct edict_s
@@ -1061,6 +1064,7 @@ struct edict_s
 	void (*die)(edict_t *self, edict_t *inflictor, edict_t *attacker,
 			int damage, vec3_t point);
 
+
 	float touch_debounce_time;
 	float pain_debounce_time;
 	float damage_debounce_time;
@@ -1126,11 +1130,20 @@ struct edict_s
 	moveinfo_t moveinfo;
 	monsterinfo_t monsterinfo;
 
-	int chasedist1;
-	int chasedist2;
 
+	/* chasecam */
+	int chasedist1; 
+	int chasedist2;
+	
+	/* grab mechanics*/
 	edict_t* controller;
+	int grabbed;
+	float grab_cooldown; /* enemy cannot be grabbed until time > this*/
+
+	/*sleep mechanics*/
+	int sleeping;
 	float awaketime;
+
 
 };
 

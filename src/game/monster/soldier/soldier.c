@@ -1504,17 +1504,64 @@ mmove_t soldier_move_death6 =
 
 void
 soldier_sleepthink(edict_t* self){
+
+		vec3_t lookangle;
+		vec3_t dir;
+
+
 		self->nextthink = level.time + 0.1;
 		printf("%g\n",level.time);
 		if(level.time > self->awaketime){
 			self->think = monster_think;
+			self->monsterinfo.currentmove = &soldier_move_stand1;
+			
+			if(self->grabbed){
+				self->enemy = self->controller;
+			}
+		}
+		if(self->grabbed){
+			if(self->controller){
+				
+				
+
+				VectorCopy(self->controller->s.angles, lookangle);
+				AngleVectors(lookangle, dir, NULL, NULL);
+				VectorNormalize(dir);
+			
+				VectorMA(self->controller->s.origin, 40, dir, self->s.origin);
+
+				VectorCopy(self->controller->s.angles, self->s.angles);
+				
+
+
+			}
 		}
 }
 
 void
 soldier_sleepuse(edict_t *ent, edict_t *other, edict_t *applicator){
 
+	
+
+	if(!ent || !applicator) return;
+
+	if(!applicator->client) return;
+
+	gi.dprintf("hello from soldier_sleepuse\n");
+
+	if(ent->grabbed){
+		ent->grabbed = 0;
+		ent->controller = NULL;
+
+	} else if (!ent->grabbed){
+		ent->grabbed = 1;
+		ent->controller = applicator;
+
+	}
+
 }
+
+
 
 void
 monster_awakeuse(edict_t *ent, edict_t *other, edict_t *applicator){
@@ -1550,8 +1597,9 @@ soldier_sleep(edict_t* self){
 	self->think = soldier_sleepthink;
 	self->use = soldier_sleepuse;
 	self->nextthink = level.time + 0.1;
-	self->awaketime = level.time + 5;
-	self->enemy = NULL;
+	self->awaketime = level.time + 50;
+	self->sleeping = 1;
+	self->enemy = world;
 }
 
 

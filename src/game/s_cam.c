@@ -44,8 +44,6 @@ void ChasecamStart (edict_t *ent)
     chasecam->classname = "chasecam";
     chasecam->nextthink = level.time + 0.100;
     chasecam->think = ChasecamTrack;
-    chasecam->chasedist1 = 0;
-    chasecam->chasedist2 = 0;
 
     ent->client->chasecam = chasecam;
     ent->client->oldplayer = G_Spawn();
@@ -53,7 +51,8 @@ void ChasecamStart (edict_t *ent)
 
 void ChasecamRestart(edict_t *ent)
 {
-    ent->nextthink = level.time + 100;
+    printf("holy crap");
+    fflush(stdout);
 
     if(ent->owner->health <= 0)
     {
@@ -65,24 +64,39 @@ void ChasecamRestart(edict_t *ent)
 
     ChasecamStart(ent->owner);
     G_FreeEdict(ent);
+
+    ent->nextthink = level.time + 100;
+
 }
 
-void ChasecamRemove(edict_t *ent, char *opt)
+void ChasecamRemove(edict_t *ent, int opt)
 {
+
+    if(!ent) return;
+
+  
+
     VectorClear (ent->client->chasecam->velocity);
+
     ent->client->ps.gunindex = gi.modelindex(ent->client->pers.weapon->view_model);
 
     ent->s.modelindex = ent->client->oldplayer->s.modelindex;
 
-    if(!strcmp(opt, "background"))
+
+    gi.dprintf("holy creap...\n");
+
+    if(opt == 0) // background
     {
+
+        gi.dprintf("holy creap...?\n");
+        if(!ent) return;
+        if(!ent->client) return;
         ent->client->chasetoggle = 3;
-        ent->client->chasecam->nextthink = level.time + 0.100;
         ent->client->chasecam->think = ChasecamRestart;
 
     }
 
-    else if(!strcmp(opt, "off")){
+    else if(opt == 1){ // off
         ent->client->chasetoggle = 0;
         G_FreeEdict(ent->client->oldplayer);
         G_FreeEdict(ent->client->chasecam);
@@ -93,19 +107,19 @@ void ChasecamTrack (edict_t *ent)
 {
 
     /* Create tempory vectors and trace variables */
-
     trace_t      tr;
     vec3_t       spot1, spot2, dir;
     vec3_t       forward, right, up;
     int          distance;
     int          tot;
 
-    ent->nextthink = level.time + 0.100;
     /* if our owner is under water, run the remove routine to repeatedly
      * check for emergment from water */
     if (ent->owner->waterlevel)
     {
-        ChasecamRemove (ent, "background");
+        printf("crashing?\n");
+        fflush(stdout);
+        ChasecamRemove (ent, 0);
         return;
     }
 
@@ -115,6 +129,8 @@ void ChasecamTrack (edict_t *ent)
 
     /* go starting at the player's origin, forward, ent->chasedist1
      * distance, and save the location in vector spot2 */
+    gi.dprintf("chasedist1: %d\n", ent->chasedist1);
+    VectorNegate(forward,forward);
     VectorMA (ent->owner->s.origin, ent->chasedist1, forward, spot2);
     /* make spot2 a bit higher, but adding 40 to the Z coordinate */
     spot2[2] = (spot2[2] + 40.000);
@@ -128,7 +144,7 @@ void ChasecamTrack (edict_t *ent)
     /* if the client is looking up, do the same, but do DOWN rather than
      * up, so the camera is behind the player aiming in a similar dir */
     else if (ent->owner->client->v_angle[0] > 0.000)
-        VectorMA (spot2, (ent->owner->client->v_angle[0] * 0.6), up, spot2);
+        VectorMA (spot2,  (ent->owner->client->v_angle[0] * 0.6), up, spot2);
 
     /* make the tr traceline trace from the player model's position, to spot2,
      * ignoring the player, with no masks. */
@@ -136,14 +152,14 @@ void ChasecamTrack (edict_t *ent)
 
     /* subtract the endpoint from the start point for length and
      * direction manipulation */
-    VectorSubtract (tr.endpos, ent->owner->s.origin, spot1);
+    VectorSubtract (tr.endpos,ent->owner->s.origin, spot1);
 
     /* in this case, length */
     ent->chasedist1 = VectorLength (spot1);
 
     /* go, starting from the end of the trace, 2 points forward (client
      * angles) and save the location in spot2 */
-    VectorMA (tr.endpos, 2.0 , forward, spot2);
+    VectorMA (tr.endpos, 2.0f , forward, spot2);
     /* make spot1 the same for tempory vector modification and make spot1
      * a bit higher than spot2 */
     VectorCopy (spot2, spot1);
@@ -153,10 +169,11 @@ void ChasecamTrack (edict_t *ent)
     tr = gi.trace (spot2, NULL, NULL, spot2, ent->owner, false);
 
     /* if we hit something, copy the trace end to spot2 and lower spot2 */
-    if (tr.fraction < 1.000)
+    if (tr.fraction < 1.000f)
     {
         VectorCopy (tr.endpos, spot2);
         spot2[2] -= 32;
+        gi.dprintf("lowering\n");
     }
 
     /* subtract endpos spot2 from startpos the camera origin, saving it to
@@ -279,13 +296,14 @@ void ChasecamTrack (edict_t *ent)
     /* Copy the position of the chasecam now, and stick it to the movedir
      * variable, for position checking when we rethink this function */
     VectorCopy (ent->s.origin, ent->movedir);
+    ent->nextthink = level.time + 0.100;
 
 }
 
 
 void Cmd_Chasecam_Toggle(edict_t *ent){
     if(ent->client->chasetoggle)
-        ChasecamRemove(ent, "off");
+        ChasecamRemove(ent, 1);
     else
         ChasecamStart(ent);
 

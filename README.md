@@ -1,26 +1,14 @@
-# Yamagi Quake II
+# Irongear Quake 2 Mod:
 
-Yamagi Quake II is an enhanced client for id Software's Quake
-II with focus on offline and coop gameplay. Both the gameplay and the graphics
-are unchanged, but many bugs in the last official release were fixed and some
-nice to have features like widescreen support and a modern OpenGL 3.2 renderer
-were added. Unlike most other Quake II source ports Yamagi Quake II is fully 64-bit
-clean. It works perfectly on modern processors and operating systems. Yamagi
-Quake II runs on nearly all common platforms; including FreeBSD, Linux, NetBSD,
-OpenBSD, Windows and macOS (experimental).
+### How to install!
 
-This code is built upon Icculus Quake II, which itself is based on Quake II
-3.21. Yamagi Quake II is released under the terms of the GPL version 2. See the
-LICENSE file for further information.
+1. Install git bash and yamagi quake 2 build dependencies.
+2. Move your pak files to the release/baseq2 folder.
+3. Use the shortcut to run the game!
 
-## Documentation
+### How to test:
 
-Before asking any question, read through the documentation! The current
-version can be found here: [doc/010_index.md](doc/010_index.md)
+1. Use give all to get all the weapons
+2. Check the reccomended binds in the help menu
+3. Use your bag of tricks to mess with the enemies!
 
-## Releases
-
-The official releases (including Windows binaries) can be found at our
-homepage: https://www.yamagi.org/quake2  
-**Unsupported** preview builds for Windows can be found at
-https://deponie.yamagi.org/quake2/misc/

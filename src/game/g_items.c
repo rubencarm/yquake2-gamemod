@@ -512,7 +512,12 @@ Use_StealthCamo(edict_t *ent, gitem_t *item){
 
 	if(!ent->client) return;
 
-	ent->client->stealthcamo ^= 1;
+	ent->flags ^= FL_NOTARGET;
+	ent->s.renderfx ^= RF_FRAMELERP;
+
+
+	gi.dprintf("Stealth Camo toggled: %d\n", ent->client->stealthcamo);
+	
 
 	return;
 }
@@ -2628,7 +2633,7 @@ static const gitem_t gameitemlist[] = {
 		3,
 		1,
 		NULL,
-		0,
+		IT_POWERUP,
 		0,
 		NULL,
 		0,

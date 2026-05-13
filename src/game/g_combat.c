@@ -525,8 +525,6 @@ T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker,
 		int knockback, int dflags, int mod)
 {
 
-	gi.centerprintf(inflictor,"dflags: %d, hello!\n",dflags);
-
 	gclient_t *client;
 	int take;
 	int save;

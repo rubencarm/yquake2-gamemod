@@ -27,6 +27,8 @@
 #include "header/local.h"
 #include "monster/misc/player.h"
 
+extern void P_ProjectSource( edict_t * ent , vec3_t distance , vec3_t forward , vec3_t right , vec3_t result ) ;
+
 static char *
 ClientTeam(edict_t *ent, char* value)
 {
@@ -1860,6 +1862,37 @@ Cmd_StingerLock_f(edict_t *ent){
 	ent->client->stinger_target = victim;
 }
 
+static void Cmd_Grab(edict_t* ent)
+{
+	vec3_t forward,right,start, end, offset;
+	vec_t dist = 12;
+	trace_t tr;
+
+	if(!ent) return;
+	if(!ent->client) return;
+
+	AngleVectors(ent->client->v_angle, forward, right, NULL);
+	VectorSet(offset, 8, 8, ent->viewheight);
+	P_ProjectSource(ent, offset, forward, right, start);
+
+	VectorMA(start, dist, forward, end);
+
+	tr = gi.trace(start, NULL,NULL, end, ent, MASK_SHOT);
+
+	if(tr.fraction == 1.0) return;
+
+	if(tr.ent->sleeping == 1){
+
+		if(tr.ent->use) {
+			gi.dprintf("here\n");
+			tr.ent->use(tr.ent,NULL,ent);
+		}
+
+	}
+
+
+}
+
 void
 ClientCommand(edict_t *ent)
 {
@@ -2030,8 +2063,13 @@ ClientCommand(edict_t *ent)
 	else if(Q_stricmp(cmd,"stingerlock") == 0){
 		Cmd_StingerLock_f(ent);
 	}
+	else if(Q_stricmp(cmd,"grab") == 0){
+		Cmd_Grab(ent);
+	}
 	else /* anything that doesn't match a command will be a chat */
 	{
 		Cmd_Say_f(ent, false, true);
 	}
+
+
 }
