@@ -10,6 +10,6 @@ Personal
 
 * Chasecam (kinda)
 * Replace weapons with metal gear solid weapons (almost)
-* 5 different stealth mechanics, (box, prone, etc) (1)
+* 5 different stealth mechanics, (box, prone, etc) (box, stealth camo, grab, stealth kill)
 * Enhance ai to react/behave with stealth mechanics
 * 3 Different metal gear solid game adjectives

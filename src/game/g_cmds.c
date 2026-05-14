@@ -1826,7 +1826,12 @@ Cmd_PrefWeap_f(edict_t *ent)
 static void
 Cmd_StingerLock_f(edict_t *ent){
 
+	char buf[1024] ="";
+
+	char* string = "Target Acquired";
 	vec3_t forward;
+
+	sprintf(buf, "xv 80 yv 80 string \"%s\"",string);
 
 	AngleVectors(ent->client->v_angle,forward,NULL,NULL);
 
@@ -1860,6 +1865,10 @@ Cmd_StingerLock_f(edict_t *ent){
 	}
 	printf("%s\n",victim->classname);
 	ent->client->stinger_target = victim;
+
+	gi.WriteByte(svc_layout);
+	gi.WriteString(buf);
+
 }
 
 static void Cmd_Grab(edict_t* ent)
