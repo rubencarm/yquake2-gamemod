@@ -1886,6 +1886,7 @@ static void Cmd_Grab(edict_t* ent)
 		if(tr.ent->use) {
 			// gi.dprintf("here\n");
 			tr.ent->use(tr.ent,NULL,ent);
+			ent->client->grabtarg = tr.ent;
 		}
 
 	}
@@ -1893,10 +1894,18 @@ static void Cmd_Grab(edict_t* ent)
 }
 static void Cmd_KillGrab(edict_t *ent){
 
+	vec3_t zero;
+
+	VectorSet(zero,0,0,0);
+
 	if(!ent) return;
 	if(!ent->client) return;
+	if(!ent->client->grabtarg) return;
 
+	gi.dprintf("killing target\n");
 
+	T_Damage(ent->client->grabtarg,ent,ent,zero,zero,zero,20000,0,0,0);
+	ent->grabbed = 0;
 }
 
 
