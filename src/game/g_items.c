@@ -512,7 +512,7 @@ Use_StealthCamo(edict_t *ent, gitem_t *item){
 
 	if(!ent->client) return;
 
-	ent->flags ^= FL_NOTARGET;
+	ent->client->stealthcamo ^= 1;
 	ent->s.renderfx ^= RF_FRAMELERP;
 
 
@@ -520,6 +520,30 @@ Use_StealthCamo(edict_t *ent, gitem_t *item){
 	
 
 	return;
+}
+qboolean Pickup_CardboardBox(edict_t *ent, edict_t *other){
+	gitem_t *item;
+	int index;
+	if(!ent || !other){
+		return false;
+	}
+	item = FindItem("Box");
+	if(item){
+		index = ITEM_INDEX(item);
+		other->client->pers.inventory[index] = 1;
+	}
+	return true;
+}
+
+void Use_CardboardBox(edict_t *ent, gitem_t *item){
+	if(!ent || !item){
+		return;
+	}
+	ValidateSelectedItem(ent);
+
+	if(!ent->client) return;
+	ent->client->boxed ^= 1;
+	gi.dprintf("holy boxed\n");
 }
 
 void
@@ -2639,6 +2663,26 @@ static const gitem_t gameitemlist[] = {
 		0,
 		""
 
+	},
+	{
+		NULL,
+		Pickup_CardboardBox,
+		Use_CardboardBox,
+		NULL,
+		NULL,
+		"items/pkup.wav",
+		NULL, 0,
+		NULL,
+		"i_health",
+		"Box",
+		3,
+		1,
+		NULL,
+		IT_POWERUP,
+		0,
+		NULL,
+		0,
+		""
 	},
 
 	/* end of list marker */

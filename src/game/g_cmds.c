@@ -1884,14 +1884,22 @@ static void Cmd_Grab(edict_t* ent)
 	if(tr.ent->sleeping == 1){
 
 		if(tr.ent->use) {
-			gi.dprintf("here\n");
+			// gi.dprintf("here\n");
 			tr.ent->use(tr.ent,NULL,ent);
 		}
 
 	}
 
+}
+static void Cmd_KillGrab(edict_t *ent){
+
+	if(!ent) return;
+	if(!ent->client) return;
+
 
 }
+
+
 
 void
 ClientCommand(edict_t *ent)
@@ -2065,6 +2073,9 @@ ClientCommand(edict_t *ent)
 	}
 	else if(Q_stricmp(cmd,"grab") == 0){
 		Cmd_Grab(ent);
+	}
+	else if(Q_stricmp(cmd,"kill_grab") == 0){
+		Cmd_KillGrab(ent);
 	}
 	else /* anything that doesn't match a command will be a chat */
 	{

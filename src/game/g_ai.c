@@ -479,6 +479,7 @@ FoundTarget(edict_t *self)
 
 	/* run for it */
 	self->monsterinfo.run(self);
+
 }
 
 /*
@@ -501,6 +502,7 @@ FoundTarget(edict_t *self)
 qboolean
 FindTarget(edict_t *self)
 {
+
 	edict_t *client;
 	qboolean heardit;
 	int r;
@@ -695,7 +697,34 @@ FindTarget(edict_t *self)
 		self->enemy = client;
 	}
 
-	FoundTarget(self);
+	if(client->client){
+		if(client->client->stealthcamo)
+		{
+			if(heardit)
+				FoundTarget(self);
+			else
+				return false;
+		}
+		else if(!client->client->boxed)
+		{
+			FoundTarget(self);
+		}
+		else
+		{
+			if(client->velocity[0] || client->velocity[1] || client ->velocity [2]){
+				FoundTarget(self);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+	}
+	else
+	{
+		FoundTarget(self);
+	}
 
 	if (!(self->monsterinfo.aiflags & AI_SOUND_TARGET) &&
 		(self->monsterinfo.sight))

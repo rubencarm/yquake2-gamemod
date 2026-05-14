@@ -129,7 +129,6 @@ void ChasecamTrack (edict_t *ent)
 
     /* go starting at the player's origin, forward, ent->chasedist1
      * distance, and save the location in vector spot2 */
-    gi.dprintf("chasedist1: %d\n", ent->chasedist1);
     VectorNegate(forward,forward);
     VectorMA (ent->owner->s.origin, ent->chasedist1, forward, spot2);
     /* make spot2 a bit higher, but adding 40 to the Z coordinate */
